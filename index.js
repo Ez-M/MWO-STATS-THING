@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-const fs = require('fs');
+import fs from 'fs';
 
 // const https = require("https");
 
@@ -56,7 +56,8 @@ let finishedData = [];
 
 function mainFunc(){
 
-    let Pilots = loadRoster();
+    let pilots = loadRoster();
+    console.log(pilots)
     getData(url);
 }
 
@@ -92,7 +93,7 @@ const getData = async (url) => {
     for(var X in dataIn.UserDetails){
         let currentBoi = dataIn.UserDetails[X]; 
         if(currentBoi.UnitTag == "AW"){
-            console.log(currentBoi);
+            // console.log(currentBoi);
         }
         
     }
@@ -105,3 +106,24 @@ const getData = async (url) => {
   }
 
   mainFunc();
+
+
+
+  /* 
+    let nameCheck = 0;
+    
+  for x in dataIn.UserDetails {
+    let currentBoi = dataIn.UserDetails[x];
+      for Y in pilots.Pilots {
+        let targetBoi = pilots.Pilots[Y];
+
+
+        if currentBoi.Username == targetBoi.Username{
+          push all desired data into its respective array, and push the current matchID to the matchID array;
+        } else if nameCheck > pilots.Pilots.length {
+          create new pilot in records, and push all relevant data to its arrays, and push matchID;
+        }
+      }
+    
+  }
+  */
