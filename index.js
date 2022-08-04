@@ -123,7 +123,7 @@ const getData = async (url) => {
         } else if nameCheck > pilots.Pilots.length {
           create new pilot in records, and push all relevant data to its arrays, and push matchID;
         }
-      }
+      }g
     
   }
   */
