@@ -48,31 +48,27 @@ import fs from "fs";
 function mainFunc(matchIDin, unitTagIn) {
   let desiredTag = unitTagIn;
   let matchID = matchIDin;
-  const url = "https://mwomercs.com/api/v1/matches/160474522304217?api_token=Gbz4lg4OIZcssVmqNove98pQVHnzRKctUZpsTZIx5xGQpWQ7eL0n8GdxBaUl";
+  let url = `https://mwomercs.com/api/v1/matches/${matchID}?api_token=Gbz4lg4OIZcssVmqNove98pQVHnzRKctUZpsTZIx5xGQpWQ7eL0n8GdxBaUl`;
 
   let oldData = loadRoster(); //pull exising pilot records from saved file
   console.log("oldData pulled" + oldData); //sanity check
 
-  getData(url).then(res => console.log(res))
- 
+  getData(url).then((res) => {
+    
+    
+      let newData = res;
   
-  // 
-  /* 
-  .then(res => res.json())
-  .then(data => {
-    let newData = data;
-console.log(newData);
-
-    let finishedData = mergeRecords(oldData, newData, desiredTag); //process the new data into the old data
-  console.log("finishedData pulled " + finishedData);
-
-  saveRecords(finishedData); //save the processed data
-  console.log("finishedData saved");
-  });  //pull new data from API with matchID  
-
+      let finishedData = mergeRecords(oldData, newData, desiredTag, matchID); //process the new data into the old data
+    console.log("finishedData pulled " );
   
-  */
+    saveRecords(finishedData); //save the processed data
+    console.log("finishedData saved");
+    });  //pull new data from API with matchID    
+
 }
+
+
+
 
 const getData = async (url) => {
   const newData = await fetch(url, {
@@ -97,10 +93,12 @@ const getData = async (url) => {
     return newData;  
 };
 
-function mergeRecords(oldDataIn, newDataIn, desiredTagIn) {
+function mergeRecords(oldDataIn, newDataIn, desiredTagIn, matchIDin) {
+
+  let matchID = matchIDin
 
   let workingData = oldDataIn; 
-  console.log(newDataIn.UserDetails);
+  // console.log(newDataIn.UserDetails);
 
   for (var X in newDataIn.UserDetails) {
     let currentBoi = newDataIn.UserDetails[X]; // select the input data we're checking for
@@ -112,7 +110,7 @@ function mergeRecords(oldDataIn, newDataIn, desiredTagIn) {
       //check first if a valid unit tag has been entered, otherwise simply run all pilots
       // console.log(currentBoi);
 
-      let nameCheck = -1;
+      let nameCheck = 0;
 
       for (var Y in workingData.Pilots) {
         let targetBoi = workingData.Pilots[Y]; // select the saved data we're checking against
@@ -167,7 +165,7 @@ function loadRoster() {
 
 function saveRecords(finishedDataIn) {
   for (var x in finishedDataIn.Pilots){
-    // console.log(finishedDataIn.Pilots[x]);
+    console.log(finishedDataIn.Pilots[x]);
   }
   // console.log(finishedDataIn);
 }
