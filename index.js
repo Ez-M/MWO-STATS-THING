@@ -98,22 +98,43 @@ function mergeRecords(oldDataIn, newDataIn, desiredTagIn, matchIDin) {
   let matchID = matchIDin
 
   let workingData = oldDataIn; 
+
+  let filterTag = desiredTagIn;
+  if (typeof filterTag === 'undefined') {filterTag = ""};
   // console.log(newDataIn.UserDetails);
 
   for (var X in newDataIn.UserDetails) {
     let currentBoi = newDataIn.UserDetails[X]; // select the input data we're checking for
-    if (  true
-      /* desiredTagIn !== undefined
-        ? currentBoi.UnitTag == toString(desiredTagIn)
-        : true */
-    ) {
+    
+    
+    if ( filterTag !== "" ? currentBoi.UnitTag == filterTag  : true ) {
       //check first if a valid unit tag has been entered, otherwise simply run all pilots
       // console.log(currentBoi);
 
       let nameCheck = 0;
 
-      for (var Y in workingData.Pilots) {
+      if(workingData.Pilots.length == 0){
+        let newPilot = {
+          Username: [currentBoi.Username],
+          MechItemID: [currentBoi.MechItemID],
+          MechName: [currentBoi.MechName],
+          SkillTier: [currentBoi.SkillTier],
+          HealthPercentage: [currentBoi.HealthPercentage],
+          Kills: [currentBoi.Kills],
+          KillsMostDamage: [currentBoi.KillsMostDamage],
+          Assists: [currentBoi.Assists],
+          ComponentsDestroyed: [currentBoi.ComponentsDestroyed],
+          MatchScore: [currentBoi.MatchScore],
+          Damage: [currentBoi.Damage],
+          TeamDamage: [currentBoi.TeamDamage],
+          matchIDs: [matchID],
+        };
+        workingData.Pilots.push(newPilot);
+      } else{
+
+              for (var Y in workingData.Pilots) {
         let targetBoi = workingData.Pilots[Y]; // select the saved data we're checking against
+        
 
         if (targetBoi.Username.indexOf(currentBoi.Username) !== -1) {
           //checking if the inputData matches any names in the saved data's username array. This will allow for potentially merging new and old account names
@@ -132,7 +153,7 @@ function mergeRecords(oldDataIn, newDataIn, desiredTagIn, matchIDin) {
         } else {
           nameCheck++;
 
-          if (nameCheck > workingData.Pilots.length) {
+          if (nameCheck >= workingData.Pilots.length) {
             let newPilot = {
               Username: [currentBoi.Username],
               MechItemID: [currentBoi.MechItemID],
@@ -151,6 +172,10 @@ function mergeRecords(oldDataIn, newDataIn, desiredTagIn, matchIDin) {
             workingData.Pilots.push(newPilot);
           }
         }
+
+      }
+
+
       }
     }
   }

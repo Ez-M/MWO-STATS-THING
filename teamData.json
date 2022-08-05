@@ -1,19 +1,6 @@
 {
     "ProcessedMatchIDs":  [],
     "Pilots":   [
-        {
-        "Username": ["ArkonEnt"],  
-        "MechItemID": [408],
-        "MechName": ["kdk-3"],
-        "SkillTier": [1],
-        "HealthPercentage": [40],
-        "Kills": [0],
-        "KillsMostDamage": [0],
-        "Assists": [5],
-        "ComponentsDestroyed": [0],
-        "MatchScore": [121],
-        "Damage": [184],
-        "TeamDamage": [21],
-        "matchIDs": []}
+        
     ]
 }
