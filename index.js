@@ -47,18 +47,19 @@ import fs from 'fs';
 
 
 
-const url = "https://mwomercs.com/api/v1/matches/160474522304217?api_token=Gbz4lg4OIZcssVmqNove98pQVHnzRKctUZpsTZIx5xGQpWQ7eL0n8GdxBaUl";
+// const url = "https://mwomercs.com/api/v1/matches/160474522304217?api_token=Gbz4lg4OIZcssVmqNove98pQVHnzRKctUZpsTZIx5xGQpWQ7eL0n8GdxBaUl";
 
 
 
 function mainFunc(matchIDin, unitTagIn){
   
-
+  let desiredTag = unitTagIn;
   let  matchID = matchIDin;
-
   let url = `https://mwomercs.com/api/v1/matches/${matchID}?api_token=Gbz4lg4OIZcssVmqNove98pQVHnzRKctUZpsTZIx5xGQpWQ7eL0n8GdxBaUl`;
+
     let oldData = loadRoster();   //pull exising pilot records from saved file
-    console.log(oldData)  //sanity check
+    // console.log(oldData)  //sanity check
+
     let newData = getData(url); //pull new data from API with matchID
 
     let finishedData = mergeRecords(oldData, newData, desiredTag);  //process the new data into the old data
@@ -94,21 +95,18 @@ const getData = async (url) => {
   };
 
 
-  function mergeRecords(dataIn){
-    for(var X in dataIn.UserDetails){
-        let currentBoi = dataIn.UserDetails[X];   // select the input data we're checking for
-        if(desiredTag !== undefined ? currentBoi.UnitTag == desiredTag : true) {
-
-          if(currentBoi.UnitTag == toString(desiredTag)){     //only process AW pilots, this can be removed or modified
-            // console.log(currentBoi);
-          
+  function mergeRecords(oldDataIn, newDataIn, desiredTagIn) {
+    for(var X in newDataIn.UserDetails) {
+        let currentBoi = newDataIn.UserDetails[X];   // select the input data we're checking for
+        if(desiredTagIn !== undefined ? currentBoi.UnitTag == toString(desiredTagIn) : true) {      //check first if a valid unit tag has been entered, otherwise simply run all pilots
+            // console.log(currentBoi);          
  
     let nameCheck = 0;
     
 
 
-      for (var Y in oldData.Pilots) {
-        let targetBoi = oldData.Pilots[Y];  // select the saved data we're checking against
+      for (var Y in oldDataIn.Pilots) {
+        let targetBoi = oldDataIn.Pilots[Y];  // select the saved data we're checking against
 
 
         if (targetBoi.Username.indexOf(currentBoi.Username) !== -1 ){   //checking if the inputData matches any names in the saved data's username array. This will allow for potentially merging new and old account names
@@ -128,7 +126,7 @@ const getData = async (url) => {
           
           nameCheck++
 
-           if (nameCheck > oldData.Pilots.length) {
+           if (nameCheck > oldDataIn.Pilots.length) {
           let newPilot = {
             
         "Username": [currentBoi.Username],  
@@ -145,7 +143,7 @@ const getData = async (url) => {
         "TeamDamage": [currentBoi.TeamDamage],
         "matchIDs": [matchID]
               }          
-          oldData.Pilots.push(newPilot)
+              oldDataIn.Pilots.push(newPilot)
         }
         
         }
@@ -163,7 +161,7 @@ const getData = async (url) => {
 
         }
         
-    }   
+       
   
 
   function loadRoster(){
@@ -171,7 +169,17 @@ const getData = async (url) => {
      return JSON.parse(rawData);
   }
 
-  mainFunc();
+
+  function saveRecords(finishedDataIn) {
+
+    console.log(finishedDataIn);
+
+  }
+
+  const matchIDTest = 160474522304217;
+  const unitTagTest = "AW"
+
+  mainFunc(matchIDTest, unitTagTest);
 
 
 
