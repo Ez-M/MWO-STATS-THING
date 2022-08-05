@@ -51,14 +51,19 @@ const url = "https://mwomercs.com/api/v1/matches/160474522304217?api_token=Gbz4l
 
 
 
-let finishedData = [];
+function mainFunc(matchIDin, unitTagIn){
+  
 
+  let  matchID = matchIDin;
 
-function mainFunc(){
+  let url = `https://mwomercs.com/api/v1/matches/${matchID}?api_token=Gbz4lg4OIZcssVmqNove98pQVHnzRKctUZpsTZIx5xGQpWQ7eL0n8GdxBaUl`;
+    let oldData = loadRoster();   //pull exising pilot records from saved file
+    console.log(oldData)  //sanity check
+    let newData = getData(url); //pull new data from API with matchID
 
-    let oldData = loadRoster();
-    console.log(oldData)
-    getData(url);
+    let finishedData = mergeRecords(oldData, newData, desiredTag);  //process the new data into the old data
+
+    saveRecords(finishedData);  //save the processed data
 }
 
 
@@ -81,7 +86,7 @@ const getData = async (url) => {
     })
     .then((data) =>{
     //   console.log(data)
-      trimData(data);
+      // trimData(data);
         })
     // console.log(newData);
     // setReturnedData(newData);
@@ -89,18 +94,15 @@ const getData = async (url) => {
   };
 
 
-  function trimData(dataIn){
+  function mergeRecords(dataIn){
     for(var X in dataIn.UserDetails){
-        let currentBoi = dataIn.UserDetails[X]; 
-        if(currentBoi.UnitTag == "AW"){
+        let currentBoi = dataIn.UserDetails[X];   // select the input data we're checking for
+        if(currentBoi.UnitTag == "AW"){     //only process AW pilots, this can be removed or modified
             // console.log(currentBoi);
-
           
  
     let nameCheck = 0;
     
-  for( var x in dataIn.UserDetails) {
-    let currentBoi = dataIn.UserDetails[x]; // select the input data we're checking for
 
 
       for (var Y in oldData.Pilots) {
@@ -124,7 +126,7 @@ const getData = async (url) => {
           
           nameCheck++
 
-           if nameCheck > oldData.Pilots.length {
+           if (nameCheck > oldData.Pilots.length) {
           let newPilot = {
             
         "Username": [currentBoi.Username],  
@@ -156,9 +158,8 @@ const getData = async (url) => {
 
         }
         
-    }
-    
-  }
+    }   
+  
 
   function loadRoster(){
     let rawData = fs.readFileSync('./teamData.json');
