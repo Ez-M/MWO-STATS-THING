@@ -97,7 +97,9 @@ const getData = async (url) => {
   function mergeRecords(dataIn){
     for(var X in dataIn.UserDetails){
         let currentBoi = dataIn.UserDetails[X];   // select the input data we're checking for
-        if(currentBoi.UnitTag == "AW"){     //only process AW pilots, this can be removed or modified
+        if(desiredTag !== undefined ? currentBoi.UnitTag == desiredTag : true) {
+
+          if(currentBoi.UnitTag == toString(desiredTag)){     //only process AW pilots, this can be removed or modified
             // console.log(currentBoi);
           
  
@@ -152,6 +154,9 @@ const getData = async (url) => {
       }
     
   }
+
+        }
+      
 
 
 
