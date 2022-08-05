@@ -56,8 +56,8 @@ let finishedData = [];
 
 function mainFunc(){
 
-    let pilots = loadRoster();
-    console.log(pilots)
+    let oldData = loadRoster();
+    console.log(oldData)
     getData(url);
 }
 
@@ -94,6 +94,66 @@ const getData = async (url) => {
         let currentBoi = dataIn.UserDetails[X]; 
         if(currentBoi.UnitTag == "AW"){
             // console.log(currentBoi);
+
+          
+ 
+    let nameCheck = 0;
+    
+  for( var x in dataIn.UserDetails) {
+    let currentBoi = dataIn.UserDetails[x]; // select the input data we're checking for
+
+
+      for (var Y in oldData.Pilots) {
+        let targetBoi = oldData.Pilots[Y];  // select the saved data we're checking against
+
+
+        if (targetBoi.Username.indexOf(currentBoi.Username) !== -1 ){   //checking if the inputData matches any names in the saved data's username array. This will allow for potentially merging new and old account names
+          targetBoi.MechItemID.push(currentBoi.MechItemID);
+          targetBoi.MechName.push(currentBoi.MechName);
+          targetBoi.SkillTier.push(currentBoi.SkillTier);
+          targetBoi.HealthPercentage.push(currentBoi.HealthPercentage);
+          targetBoi.Kills.push(currentBoi.Kills);
+          targetBoi.KillsMostDamage.push(currentBoi.KillsMostDamage);
+          targetBoi.Assists.push(currentBoi.Assists);
+          targetBoi.ComponentsDestroyed.push(currentBoi.ComponentsDestroyed);
+          targetBoi.MatchScore.push(currentBoi.MatchScore);
+          targetBoi.Damage.push(currentBoi.Damage);
+          targetBoi.TeamDamage.push(currentBoi.TeamDamage);
+          targetBoi.matchIDs.push(matchID);
+        } else {
+          
+          nameCheck++
+
+           if nameCheck > oldData.Pilots.length {
+          let newPilot = {
+            
+        "Username": [currentBoi.Username],  
+        "MechItemID": [currentBoi.MechItemID],
+        "MechName": [currentBoi.MechName],
+        "SkillTier": [currentBoi.SkillTier],
+        "HealthPercentage": [currentBoi.HealthPercentage],
+        "Kills": [currentBoi.Kills],
+        "KillsMostDamage": [currentBoi.KillsMostDamage],
+        "Assists": [currentBoi.Assists],
+        "ComponentsDestroyed": [currentBoi.ComponentsDestroyed],
+        "MatchScore": [currentBoi.MatchScore],
+        "Damage": [currentBoi.Damage],
+        "TeamDamage": [currentBoi.TeamDamage],
+        "matchIDs": [matchID]
+              }          
+          oldData.Pilots.push(newPilot)
+        }
+        
+        }
+        
+       
+      }
+    
+  }
+
+
+
+
         }
         
     }
@@ -109,21 +169,84 @@ const getData = async (url) => {
 
 
 
+ 
+
+
   /* 
+    {    
+    "Pilots":   [
+        Username: ['ArkonEnt'],  
+        MechItemID: [408],
+        MechName: ['kdk-3'],
+        SkillTier: [1],
+        HealthPercentage: [40],
+        Kills: [0],
+        KillsMostDamage: [0],
+        Assists: [5],
+        ComponentsDestroyed: [0],
+        MatchScore: [121],
+        Damage: [184],
+        TeamDamage: [21],
+        matchIDs: []
+    ]
+}
+*/
+
+
+
+
+ /* 
     let nameCheck = 0;
     
   for x in dataIn.UserDetails {
-    let currentBoi = dataIn.UserDetails[x];
-      for Y in pilots.Pilots {
-        let targetBoi = pilots.Pilots[Y];
+    let currentBoi = dataIn.UserDetails[x]; // select the input data we're checking for
 
 
-        if currentBoi.Username == targetBoi.Username{
-          push all desired data into its respective array, and push the current matchID to the matchID array;
-        } else if nameCheck > pilots.Pilots.length {
-          create new pilot in records, and push all relevant data to its arrays, and push matchID;
+      for Y in oldData.Pilots {
+        let targetBoi = oldData.Pilots[Y];  // select the saved data we're checking against
+
+
+        if (targetBoi.Username.indexOf(currentBoi.Username) !== -1 ){   //checking if the inputData matches any names in the saved data's username array. This will allow for potentially merging new and old account names
+          targetBoi.MechItemID.push(currentBoi.MechItemID);
+          targetBoi.MechName.push(currentBoi.MechName);
+          targetBoi.SkillTier.push(currentBoi.SkillTier);
+          targetBoi.HealthPercentage.push(currentBoi.HealthPercentage);
+          targetBoi.Kills.push(currentBoi.Kills);
+          targetBoi.KillsMostDamage.push(currentBoi.KillsMostDamage);
+          targetBoi.Assists.push(currentBoi.Assists);
+          targetBoi.ComponentsDestroyed.push(currentBoi.ComponentsDestroyed);
+          targetBoi.MatchScore.push(currentBoi.MatchScore);
+          targetBoi.Damage.push(currentBoi.Damage);
+          targetBoi.TeamDamage.push(currentBoi.TeamDamage);
+          targetBoi.matchIDs.push(matchID);
+        } else {
+          
+          nameCheck++
+
+           if nameCheck > oldData.Pilots.length {
+          let newPilot = {
+            
+        "Username": [currentBoi.Username],  
+        "MechItemID": [currentBoi.MechItemID],
+        "MechName": [currentBoi.MechName],
+        "SkillTier": [currentBoi.SkillTier],
+        "HealthPercentage": [currentBoi.HealthPercentage],
+        "Kills": [currentBoi.Kills],
+        "KillsMostDamage": [currentBoi.KillsMostDamage],
+        "Assists": [currentBoi.Assists],
+        "ComponentsDestroyed": [currentBoi.ComponentsDestroyed],
+        "MatchScore": [currentBoi.MatchScore],
+        "Damage": [currentBoi.Damage],
+        "TeamDamage": [currentBoi.TeamDamage],
+        "matchIDs": [matchID]
+              }          
+          oldData.Pilots.push(newPilot)
         }
-      }g
+        
+        }
+        
+       
+      }
     
   }
   */
