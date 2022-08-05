@@ -1,5 +1,6 @@
 import fetch from "node-fetch";
 import fs from "fs";
+import { finished } from "stream";
 
 // const https = require("https");
 
@@ -45,25 +46,51 @@ import fs from "fs";
 
 // let url = `https://mwomercs.com/api/v1/matches/${matchID}?api_token=Gbz4lg4OIZcssVmqNove98pQVHnzRKctUZpsTZIx5xGQpWQ7eL0n8GdxBaUl`;
 
-function mainFunc(matchIDin, unitTagIn) {
+async function mainFunc(matchIDin, unitTagIn) {
   let desiredTag = unitTagIn;
-  let matchID = matchIDin;
-  let url = `https://mwomercs.com/api/v1/matches/${matchID}?api_token=Gbz4lg4OIZcssVmqNove98pQVHnzRKctUZpsTZIx5xGQpWQ7eL0n8GdxBaUl`;
+  let numOID = matchIDin.length
+  console.log(matchIDin.length)
 
   let oldData = loadRoster(); //pull exising pilot records from saved file
   console.log("oldData pulled" + oldData); //sanity check
 
-  getData(url).then((res) => {
+  
+  for(let i = 0; i < matchIDin.length; i++){
+
+    let matchID = matchIDin[i]
+   
+  let url = `https://mwomercs.com/api/v1/matches/${matchID}?api_token=Gbz4lg4OIZcssVmqNove98pQVHnzRKctUZpsTZIx5xGQpWQ7eL0n8GdxBaUl`;
+
+  
+  
+
+   await getData(url).then((res) => {      //pull new data from API with matchID    
     
     
       let newData = res;
   
       let finishedData = mergeRecords(oldData, newData, desiredTag, matchID); //process the new data into the old data
+      oldData = finishedData;
     console.log("finishedData pulled " );
+
+    return finishedData;
+    
+    
+    }).then((res)=>{
+
+      if( i == matchIDin.length-1){
+        // console.log('done')
+      saveRecords(res); //save the processed data
+      console.log("finishedData saved");
+    }
+
+    });
+
+
+  }
+
   
-    saveRecords(finishedData); //save the processed data
-    console.log("finishedData saved");
-    });  //pull new data from API with matchID    
+  
 
 }
 
@@ -195,7 +222,11 @@ function saveRecords(finishedDataIn) {
   // console.log(finishedDataIn);
 }
 
-const matchIDTest = 160474522304217;
+const matchIDTest = [152567485709779,
+  152352737344201,
+  152889608258195,
+  152515946102057,
+  152696334729162];
 const unitTagTest = "AW";
 
 mainFunc(matchIDTest, unitTagTest);
@@ -274,4 +305,14 @@ mainFunc(matchIDTest, unitTagTest);
       }
     
   }
+  */
+
+
+
+
+  /* 
+
+160474522304217
+
+  
   */
