@@ -1,6 +1,8 @@
 import fetch from "node-fetch";
 import fs from "fs";
-import { finished } from "stream";
+import inquirer from "inquirer";
+import { match } from "assert";
+
 
 // const https = require("https");
 
@@ -45,6 +47,8 @@ import { finished } from "stream";
 // const url = "https://mwomercs.com/api/v1/matches/160474522304217?api_token=Gbz4lg4OIZcssVmqNove98pQVHnzRKctUZpsTZIx5xGQpWQ7eL0n8GdxBaUl";
 
 // let url = `https://mwomercs.com/api/v1/matches/${matchID}?api_token=Gbz4lg4OIZcssVmqNove98pQVHnzRKctUZpsTZIx5xGQpWQ7eL0n8GdxBaUl`;
+
+
 
 async function mainFunc(matchIDin, unitTagIn) {
   let desiredTag = unitTagIn;
@@ -229,14 +233,53 @@ function saveRecords(finishedDataIn) {
   // console.log(finishedDataIn);
 }
 
+
+function getRosters() {
+  // try{
+    if (fs.existsSync("./rosters") == true) {
+    console.log("director exists.");
+  } else {
+    
+    fs.mkdir('./rosters', (err) => {  if (err) return err;})
+    console.log("Roster directory did not exist, creating roster folder");
+
+  }
+// } catch(e) {
+//   console.log("An error occured.");
+// }
+}
+
+
+
+
+
 const matchIDTest = [152567485709779,
   152352737344201,
   152889608258195,
   152515946102057,
   152696334729162];
+
 const unitTagTest = "AW";
 
-mainFunc(matchIDTest, unitTagTest);
+const testText = "sss";
+
+ getRosters();
+
+inquirer.prompt([
+  {
+    type: "list",
+    name: "targetFile",
+    message: "Which roster would you like to use?",
+    choices: matchIDTest
+
+  }
+
+]).then((data) => {
+  console.log(data.targetFile)
+  mainFunc(matchIDTest, unitTagTest);
+})
+
+
 
 /* 
     {    
