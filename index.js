@@ -154,7 +154,7 @@ function mergeRecords(oldDataIn, newDataIn, desiredTagIn, matchIDin) {
           MatchScore: [currentBoi.MatchScore],
           Damage: [currentBoi.Damage],
           TeamDamage: [currentBoi.TeamDamage],
-          matchIDs: [matchID],
+          MatchIDs: [matchID],
         };
         workingData.Pilots.push(newPilot);
       } else{
@@ -162,8 +162,11 @@ function mergeRecords(oldDataIn, newDataIn, desiredTagIn, matchIDin) {
               for (var Y in workingData.Pilots) {
         let targetBoi = workingData.Pilots[Y]; // select the saved data we're checking against
         
+        
 
-        if (targetBoi.Username.indexOf(currentBoi.Username) !== -1) {
+        if (targetBoi.Username.indexOf(currentBoi.Username) !== -1 ) {
+
+          if (targetBoi.MatchIDs.indexOf(matchID) === -1) {
           //checking if the inputData matches any names in the saved data's username array. This will allow for potentially merging new and old account names
           targetBoi.MechItemID.push(currentBoi.MechItemID);
           targetBoi.MechName.push(currentBoi.MechName);
@@ -176,7 +179,9 @@ function mergeRecords(oldDataIn, newDataIn, desiredTagIn, matchIDin) {
           targetBoi.MatchScore.push(currentBoi.MatchScore);
           targetBoi.Damage.push(currentBoi.Damage);
           targetBoi.TeamDamage.push(currentBoi.TeamDamage);
-          targetBoi.matchIDs.push(matchID);
+          targetBoi.MatchIDs.push(matchID);
+        }
+
         } else {
           nameCheck++;
 
@@ -194,7 +199,7 @@ function mergeRecords(oldDataIn, newDataIn, desiredTagIn, matchIDin) {
               MatchScore: [currentBoi.MatchScore],
               Damage: [currentBoi.Damage],
               TeamDamage: [currentBoi.TeamDamage],
-              matchIDs: [matchID],
+              MatchIDs: [matchID],
             };
             workingData.Pilots.push(newPilot);
           }
