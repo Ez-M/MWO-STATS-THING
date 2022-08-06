@@ -219,6 +219,8 @@ function saveRecords(finishedDataIn) {
   for (var x in finishedDataIn.Pilots){
     console.log(finishedDataIn.Pilots[x]);
   }
+
+  fs.writeFileSync("./teamData.json", JSON.stringify(finishedDataIn));
   // console.log(finishedDataIn);
 }
 
