@@ -48,12 +48,13 @@ import path from "path";
 
 // let url = `https://mwomercs.com/api/v1/matches/${matchID}?api_token=Gbz4lg4OIZcssVmqNove98pQVHnzRKctUZpsTZIx5xGQpWQ7eL0n8GdxBaUl`;
 
-async function mainFunc(matchIDin, unitTagIn) {
+async function mainFunc(matchIDin, unitTagIn, targetFileIn) {
   let desiredTag = unitTagIn;
   let numOID = matchIDin.length;
+  let targetFile = targetFileIn;
   console.log(matchIDin.length);
 
-  let oldData = loadRoster(); //pull exising pilot records from saved file
+  let oldData = loadRoster(targetFile); //pull exising pilot records from saved file
   console.log("oldData pulled" + oldData); //sanity check
 
   for (let i = 0; i < matchIDin.length; i++) {
@@ -195,8 +196,9 @@ function mergeRecords(oldDataIn, newDataIn, desiredTagIn, matchIDin) {
   return workingData;
 }
 
-function loadRoster() {
-  let rawData = fs.readFileSync("./teamData.json");
+function loadRoster(targetFileIn) {
+  let targetPath = `./rosters/${targetFileIn}`;
+  let rawData = fs.readFileSync(targetPath);
   return JSON.parse(rawData);
 }
 
@@ -234,6 +236,11 @@ function getRosters() {
   // }
 }
 
+function makeNewRoster() { 
+
+}
+
+
 const matchIDTest = [
   152567485709779, 152352737344201, 152889608258195, 152515946102057,
   152696334729162,
@@ -255,8 +262,12 @@ inquirer
     },
   ])
   .then((data) => {
-    console.log(data.targetFile);
-    mainFunc(matchIDTest, unitTagTest);
+    if (data.targetFile == "Make New Roster") {
+      let newRoster = makeNewRoster();
+      
+    }
+    else { mainFunc(matchIDTest, unitTagTest, data.targetFile) ;}
+    
   });
 
 /* 
