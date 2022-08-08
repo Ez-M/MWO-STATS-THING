@@ -48,40 +48,46 @@ import path from "path";
 
 // let url = `https://mwomercs.com/api/v1/matches/${matchID}?api_token=Gbz4lg4OIZcssVmqNove98pQVHnzRKctUZpsTZIx5xGQpWQ7eL0n8GdxBaUl`;
 
-async function mainFunc(matchIDin, unitTagIn, targetFileIn) {
+function mainFunc(matchIDin, unitTagIn, targetFileIn) {
   let desiredTag = unitTagIn;
   let numOID = matchIDin.length;
   let targetFile = targetFileIn;
   console.log(matchIDin.length);
 
-  let oldData = loadRoster(targetFile); //pull exising pilot records from saved file
-  console.log("oldData pulled" + oldData); //sanity check
+  let oldData = loadRoster(targetFile) //pull exising pilot records from saved file    
 
-  for (let i = 0; i < matchIDin.length; i++) {
-    let matchID = matchIDin[i];
+      console.log("oldData pulled" + oldData); //sanity check
 
-    let url = `https://mwomercs.com/api/v1/matches/${matchID}?api_token=Gbz4lg4OIZcssVmqNove98pQVHnzRKctUZpsTZIx5xGQpWQ7eL0n8GdxBaUl`;
+      for (let i = 0; i < matchIDin.length; i++) {
+        let matchID = matchIDin[i];
+    
+        let url = `https://mwomercs.com/api/v1/matches/${matchID}?api_token=Gbz4lg4OIZcssVmqNove98pQVHnzRKctUZpsTZIx5xGQpWQ7eL0n8GdxBaUl`;
+    
+        getData(url)
+          .then((res) => {
+            //pull new data from API with matchID
+    
+            let newData = res;
+    
+            let finishedData = mergeRecords(oldData, newData, desiredTag, matchID); //process the new data into the old data
+            oldData = finishedData;
+            console.log("finishedData pulled ");
+    
+            return finishedData;
+          })
+          .then((res) => {
+            if (i == matchIDin.length - 1) {
+              // console.log('done')
+              saveRecords(res); //save the processed data
+              console.log("finishedData saved");
+            }
+          });
+      }
 
-    await getData(url)
-      .then((res) => {
-        //pull new data from API with matchID
 
-        let newData = res;
-
-        let finishedData = mergeRecords(oldData, newData, desiredTag, matchID); //process the new data into the old data
-        oldData = finishedData;
-        console.log("finishedData pulled ");
-
-        return finishedData;
-      })
-      .then((res) => {
-        if (i == matchIDin.length - 1) {
-          // console.log('done')
-          saveRecords(res); //save the processed data
-          console.log("finishedData saved");
-        }
-      });
-  }
+      
+    
+  
 }
 
 const getData = async (url) => {
@@ -198,33 +204,11 @@ function mergeRecords(oldDataIn, newDataIn, desiredTagIn, matchIDin) {
 
 function loadRoster(targetFileIn) {
   let targetPath = `./rosters/${targetFileIn}`;
-  let rawData = fs.readFileSync(targetPath);
+  let rawData = fs.readFileSync(targetPath);  
+      return JSON.parse(rawData);    
+         }
+    
 
-  if (rawData) {
-    try{
-      return JSON.parse(rawData);
-    } catch(e) {
-      console.log('Target roster file does not contain expected information. File can be initialized but doing so will overwrite all of its contents. Initialize file now?')
-      inquirer.prompt([{
-      type: "list",
-      name: "YN",
-      message: 'Target roster file does not contain expected information. File can be initialized but doing so will overwrite all of its contents. Initialize file now?',
-      choices: ["Yes, overwrite the file", "No, halt overwrite"],
-      }]).then((res) => {
-        if (res == "Yes, overwrite the file"){
-          fs.writeFileSync(`./rosters/${targetFileIn}.json`, '{"Pilots":[]}', function (err) {
-            if (err) throw err;
-            console.log('New Roster Saved!')
-          }).then((res) => {
-            return JSON.parse(rawData);
-          })
-
-          
-        } else {return}
-      })
-    }
-  }  
-}
 
 function saveRecords(finishedDataIn) {
   for (var x in finishedDataIn.Pilots) {
@@ -270,15 +254,15 @@ function makeNewRoster(newFileNameIn) {
   );
 }
 
-// function validateFileInit(targetFileIn) {
-//   if(targetFile != "Make New Roster"){
-//     let fileCheck = fs.readFileSync(`./rosters/${targetFileIn}`)
-//     if(fileCheck == "" || fileCheck == "{}"){
-//       fs.writeFileSync(`./rosters/${targetFileIn}.json`, '{"Pilots":[]}', function (err) {
-//         if (err) throw err;
-//         console.log('New Roster Saved!')
-//       })
-// }
+function validateFileInit(targetFileIn) {
+  
+    let fileCheck = fs.readFileSync(`./rosters/${targetFileIn}`)
+    if(fileCheck == "" || fileCheck == "{}"){
+      fs.writeFileSync(`./rosters/${targetFileIn}`, '{"Pilots":[]}', function (err) {
+        if (err) throw err;
+        console.log('New Roster Saved!')
+      })}
+}
 
 const matchIDTest = [
   152567485709779, 152352737344201, 152889608258195, 152515946102057,
@@ -323,7 +307,11 @@ inquirer
           return newRoster;
         });
     } else {
-      // validateFileInit(data.targetFile);
+      validateFileInit(data.targetFile);
+
+
+
+
 
 
       mainFunc(matchIDTest, unitTagTest, data.targetFile);
