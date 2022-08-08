@@ -199,7 +199,31 @@ function mergeRecords(oldDataIn, newDataIn, desiredTagIn, matchIDin) {
 function loadRoster(targetFileIn) {
   let targetPath = `./rosters/${targetFileIn}`;
   let rawData = fs.readFileSync(targetPath);
-  return JSON.parse(rawData);
+
+  if (rawData) {
+    try{
+      return JSON.parse(rawData);
+    } catch(e) {
+      console.log('Target roster file does not contain expected information. File can be initialized but doing so will overwrite all of its contents. Initialize file now?')
+      inquirer.prompt([{
+      type: "list",
+      name: "YN",
+      message: 'Target roster file does not contain expected information. File can be initialized but doing so will overwrite all of its contents. Initialize file now?',
+      choices: ["Yes, overwrite the file", "No, halt overwrite"],
+      }]).then((res) => {
+        if (res == "Yes, overwrite the file"){
+          fs.writeFileSync(`./rosters/${targetFileIn}.json`, '{"Pilots":[]}', function (err) {
+            if (err) throw err;
+            console.log('New Roster Saved!')
+          }).then((res) => {
+            return JSON.parse(rawData);
+          })
+
+          
+        } else {return}
+      })
+    }
+  }  
 }
 
 function saveRecords(finishedDataIn) {
@@ -217,29 +241,44 @@ function getRosters() {
     console.log("directory exists.");
   } else {
     fs.mkdir("./rosters", (err) => {
-      if (err) {return err};
+      if (err) {
+        return err;
+      }
     });
     console.log("Roster directory did not exist, creating roster folder");
   }
 
-  
-
   const rostersList = fs.readdirSync("./rosters");
 
-  rostersList.push('Make New Roster');
+  rostersList.push("Make New Roster");
 
   return rostersList;
 
-  
   // } catch(e) {
   //   console.log("An error occured.");
   // }
 }
 
-function makeNewRoster() { 
-
+function makeNewRoster(newFileNameIn) {
+  fs.writeFileSync(
+    `./rosters/${newFileNameIn}.json`,
+    '{"Pilots":[]}',
+    function (err) {
+      if (err) throw err;
+      console.log("New Roster Saved!");
+    }
+  );
 }
 
+// function validateFileInit(targetFileIn) {
+//   if(targetFile != "Make New Roster"){
+//     let fileCheck = fs.readFileSync(`./rosters/${targetFileIn}`)
+//     if(fileCheck == "" || fileCheck == "{}"){
+//       fs.writeFileSync(`./rosters/${targetFileIn}.json`, '{"Pilots":[]}', function (err) {
+//         if (err) throw err;
+//         console.log('New Roster Saved!')
+//       })
+// }
 
 const matchIDTest = [
   152567485709779, 152352737344201, 152889608258195, 152515946102057,
@@ -263,11 +302,32 @@ inquirer
   ])
   .then((data) => {
     if (data.targetFile == "Make New Roster") {
-      let newRoster = makeNewRoster();
-      
+      inquirer
+        .prompt([
+          {
+            type: "input",
+            name: "newFileName",
+            message: "What would you like this roster to be titled?",
+            validate: function (newFileName) {
+              let valid = /([A-Z]|[a-z]|[0-9]|_|-|\.|\s)+/i.test(newFileName);
+              if (valid) {
+                return true;
+              } else {
+                return fasle;
+              }
+            },
+          },
+        ])
+        .then((res) => {
+          let newRoster = makeNewRoster(res.newFileName);
+          return newRoster;
+        });
+    } else {
+      // validateFileInit(data.targetFile);
+
+
+      mainFunc(matchIDTest, unitTagTest, data.targetFile);
     }
-    else { mainFunc(matchIDTest, unitTagTest, data.targetFile) ;}
-    
   });
 
 /* 
